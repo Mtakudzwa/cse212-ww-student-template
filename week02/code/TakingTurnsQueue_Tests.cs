@@ -169,4 +169,62 @@ public class TakingTurnsQueueTests
             );
         }
     }
+
+    public class Person
+    {
+        public string Name { get; }
+        public int Turns { get; set; }
+
+        public Person(string name, int turns)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name cannot be null or empty.");
+            }
+
+            if (turns < 0)
+            {
+                throw new ArgumentException("Turns cannot be negative.");
+            }
+
+            Name = name;
+            Turns = turns;
+        }
+    }
+public class TakingTurnsQueue
+{
+    private readonly Queue<Person> queue = new Queue<Person>();
+
+    // Add a person to the queue
+    public void AddPerson(string name, int turns)
+    {
+        var person = new Person(name, turns);
+        queue.Enqueue(person);
+    }
+
+    // Get the next person in the queue
+    public Person GetNextPerson()
+    {
+        if (queue.Count == 0)
+        {
+            throw new InvalidOperationException("No one in the queue.");
+        }
+
+        var current = queue.Dequeue();
+        if (current.Turns > 1 || current.Turns == 0) // `Turns == 0` means infinite
+        {
+            if (current.Turns > 0)
+            {
+                current.Turns--;
+            }
+            queue.Enqueue(current);
+        }
+        return current;
+    }
+
+    // Get the current length of the queue
+    public int Length => queue.Count;
+}
+
+
 }
