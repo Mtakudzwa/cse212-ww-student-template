@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
-public class LinkedList
+public class LinkedList : IEnumerable<int>
 {
     private Node? _head;
     private Node? _tail;
@@ -19,6 +21,9 @@ public class LinkedList
         }
     }
 
+    /// <summary>
+    /// Insert a new node at the front (i.e. the head) of the linked list.
+    /// </summary>
     public void InsertHead(int value)
     {
         Node newNode = new(value);
@@ -35,6 +40,9 @@ public class LinkedList
         }
     }
 
+    /// <summary>
+    /// Insert a new node at the back (i.e. the tail) of the linked list.
+    /// </summary>
     public void InsertTail(int value)
     {
         Node newNode = new(value);
@@ -51,6 +59,9 @@ public class LinkedList
         }
     }
 
+    /// <summary>
+    /// Remove the first node (i.e. the head) of the linked list.
+    /// </summary>
     public void RemoveHead()
     {
         if (_head is null) return;
@@ -67,6 +78,9 @@ public class LinkedList
         }
     }
 
+    /// <summary>
+    /// Remove the last node (i.e. the tail) of the linked list.
+    /// </summary>
     public void RemoveTail()
     {
         if (_tail is null) return;
@@ -83,6 +97,33 @@ public class LinkedList
         }
     }
 
+    /// <summary>
+    /// Insert 'newValue' after the first occurrence of 'value' in the linked list.
+    /// </summary>
+    public void InsertAfter(int value, int newValue)
+    {
+        Node? current = _head;
+        while (current != null)
+        {
+            if (current.Value == value)
+            {
+                Node newNode = new(newValue);
+                newNode.Next = current.Next;
+                newNode.Prev = current;
+                if (current.Next != null)
+                    current.Next.Prev = newNode;
+                else
+                    _tail = newNode;
+                current.Next = newNode;
+                return;
+            }
+            current = current.Next;
+        }
+    }
+
+    /// <summary>
+    /// Remove the first node that contains 'value'.
+    /// </summary>
     public void Remove(int value)
     {
         Node? current = _head;
@@ -94,18 +135,19 @@ public class LinkedList
                     current.Prev.Next = current.Next;
                 else
                     _head = current.Next;
-
                 if (current.Next != null)
                     current.Next.Prev = current.Prev;
                 else
                     _tail = current.Prev;
-                
                 return;
             }
             current = current.Next;
         }
     }
 
+    /// <summary>
+    /// Search for all instances of 'oldValue' and replace the value to 'newValue'.
+    /// </summary>
     public void Replace(int oldValue, int newValue)
     {
         Node? current = _head;
@@ -114,37 +156,56 @@ public class LinkedList
             if (current.Value == oldValue)
             {
                 current.Value = newValue;
-                return;
             }
             current = current.Next;
         }
     }
 
-    public void Reverse()
+    /// <summary>
+    /// Iterate backward through the Linked List
+    /// </summary>
+    public IEnumerable<int> Reverse()
     {
-        Node? current = _head;
-        Node? temp = null;
-        
+        Node? current = _tail;
         while (current != null)
         {
-            temp = current.Prev;
-            current.Prev = current.Next;
-            current.Next = temp;
+            yield return current.Value;
             current = current.Prev;
         }
-        
-        if (temp != null)
-            _head = temp.Prev;
     }
 
-    public void PrintList()
+    public override string ToString()
+    {
+        return "<LinkedList>{" + string.Join(", ", this) + "}";
+    }
+
+    // Just for testing.
+    public Boolean HeadAndTailAreNull()
+    {
+        return _head is null && _tail is null;
+    }
+
+    // Just for testing.
+    public Boolean HeadAndTailAreNotNull()
+    {
+        return _head is not null && _tail is not null;
+    }
+
+    /// <summary>
+    /// Yields all values in the linked list
+    /// </summary>
+    public IEnumerator<int> GetEnumerator()
     {
         Node? current = _head;
         while (current != null)
         {
-            Console.Write(current.Value + " -> ");
+            yield return current.Value;
             current = current.Next;
         }
-        Console.WriteLine("null");
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
