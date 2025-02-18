@@ -170,6 +170,40 @@ public class TakingTurnsQueueTests
         }
     }
 
+    public class TakingTurnsQueue
+    {
+        private Queue<Person> queue = new Queue<Person>();
+
+        public int Length => queue.Count;
+
+        public void AddPerson(string name, int turns)
+        {
+            queue.Enqueue(new Person(name, turns));
+        }
+
+        public Person GetNextPerson()
+        {
+            if (queue.Count == 0)
+            {
+                throw new InvalidOperationException("No one in the queue.");
+            }
+
+            var person = queue.Dequeue();
+
+            if (person.Turns <= 0) // Infinite turns
+            {
+                queue.Enqueue(person);
+            }
+            else if (person.Turns > 1) // Finite turns, decrement and re-add
+            {
+                person.Turns--;
+                queue.Enqueue(person);
+            }
+
+            return person;
+        }
+    }
+
     public class Person
     {
         public string Name { get; }
@@ -177,54 +211,9 @@ public class TakingTurnsQueueTests
 
         public Person(string name, int turns)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Name cannot be null or empty.");
-            }
-
-            if (turns < 0)
-            {
-                throw new ArgumentException("Turns cannot be negative.");
-            }
-
             Name = name;
             Turns = turns;
         }
     }
-public class TakingTurnsQueue
-{
-    private readonly Queue<Person> queue = new Queue<Person>();
-
-    // Add a person to the queue
-    public void AddPerson(string name, int turns)
-    {
-        var person = new Person(name, turns);
-        queue.Enqueue(person);
-    }
-
-    // Get the next person in the queue
-    public Person GetNextPerson()
-    {
-        if (queue.Count == 0)
-        {
-            throw new InvalidOperationException("No one in the queue.");
-        }
-
-        var current = queue.Dequeue();
-        if (current.Turns > 1 || current.Turns == 0) // `Turns == 0` means infinite
-        {
-            if (current.Turns > 0)
-            {
-                current.Turns--;
-            }
-            queue.Enqueue(current);
-        }
-        return current;
-    }
-
-    // Get the current length of the queue
-    public int Length => queue.Count;
-}
-
 
 }

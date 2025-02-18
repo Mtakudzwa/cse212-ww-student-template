@@ -1,29 +1,34 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-// TODO Problem 2 - Write and run test cases and fix the code to match requirements.
-
-[TestClass]
-public class PriorityQueueTests
+public class PriorityQueue<T>
 {
-    [TestMethod]
-    // Scenario: 
-    // Expected Result: 
-    // Defect(s) Found: 
-    public void TestPriorityQueue_1()
+    private List<(T Value, int Priority)> queue = new List<(T, int)>();
+
+    public int Count => queue.Count;
+
+    public void Enqueue(T value, int priority)
     {
-        var priorityQueue = new PriorityQueue();
-        Assert.Fail("Implement the test case and then remove this.");
+        queue.Add((value, priority));
     }
 
-    [TestMethod]
-    // Scenario: 
-    // Expected Result: 
-    // Defect(s) Found: 
-    public void TestPriorityQueue_2()
+    public T Dequeue()
     {
-        var priorityQueue = new PriorityQueue();
-        Assert.Fail("Implement the test case and then remove this.");
-    }
+        if (queue.Count == 0)
+        {
+            throw new InvalidOperationException("The queue is empty.");
+        }
 
-    // Add more test cases as needed below.
+        // Find the highest priority
+        int highestPriority = queue.Max(item => item.Priority);
+
+        // Find the first item with the highest priority (FIFO for ties)
+        var index = queue.FindIndex(item => item.Priority == highestPriority);
+
+        // Remove and return the item
+        var item = queue[index];
+        queue.RemoveAt(index);
+        return item.Value;
+    }
 }
